@@ -1,5 +1,58 @@
 # The vetrinary hospital    
 
+### Creating the tables in our database:
+
+```
+create table cats
+(
+    name varchar DEFAULT NULL,
+    breed varchar DEFAULT NULL,
+    house_num int DEFAULT NULL,
+    owner_id int DEFAULT NULL
+);
+
+create table dogs
+(
+    name varchar DEFAULT NULL,
+    breed varchar DEFAULT NULL,
+    house_num int DEFAULT NULL,
+    owner_id int DEFAULT NULL
+);
+
+create table owners
+(
+    name varchar DEFAULT NULL,
+    phone varchar DEFAULT NULL,
+    address varchar DEFAULT NULL,
+    id int DEFAULT NULL
+);
+
+
+INSERT INTO cats VALUES ('Bell', 'Siameese', 1, 4), ('Jackson', 'Balinese', 2, 3),
+                        ('Precious', 'Himalayan', 3, 4),
+                        ('Rocky', 'Egyptian Mau', 4, 2),
+                        ('Samson', 'Javanese', 4, 1),
+                        ('tobi', 'regular', 2, 0),
+                        ('tobi', 'regular', 2, 0);
+
+INSERT INTO dogs VALUES ('Rex', 'Chihuahua', 1, 4),
+                        ('Clifford', 'German Shepard', 3, 4),
+                        ('Lucky', 'Daschund', 4, 2),
+                        ('Bobo', 'Shih-Tzu', 4, 1),
+                        ('Buddy', 'Golden Retriever', 2, 0),
+                        ('Leo', 'English Bulldog', 2, 0),
+                        ('Lulu', 'Hound', 2, 0),
+                        ('lulu', 'Hound', 2, 0);
+
+
+INSERT INTO owners VALUES ('Josh', '313-642', '1440 G St.', 1),
+                          ('Alison', '214-709', 'None', 2),
+                          ('Avi', '469-878', '1776 NY Ave.', 3),
+                          ('Justin', '410-333', 'None', 4);
+
+```
+
+
 ### Let's examine our database tables  
 ```
 SELECT * FROM cats;
