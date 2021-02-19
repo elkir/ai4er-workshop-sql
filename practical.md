@@ -103,47 +103,7 @@ Understanding substr: [substr](https://www.w3schools.com/sql/func_mysql_substr.a
 
 #### We know that all pets in houses 2 & 4 are already vaccinated so we can filter them out
 
-Option I:
-
-```
-SELECT * FROM cats
-WHERE (house_number != 1) AND 
-		(house_number != 3)
-```
-
-Option II:
-
-```
-SELECT * FROM cats
-WHERE  substr(breed ,0, 2) = 'S' AND
-       house_number IN (1, 3)
-```
-
-Option III:
-
-```
-SELECT * FROM cats
-WHERE  substr(breed ,0, 2) = 'S' AND
-
-house_number NOT IN (2, 4)
-```
-
-Option IV:
-
-```
-SELECT * FROM cats
-WHERE  breed LIKE 'S%' AND
-house_number NOT IN (2, 4)
-```
-
-
 #### Or if we know all pets are vaccinated in house number 1onwards
-
-```
-SELECT * FROM cats
-WHERE  substr(breed ,0, 2) = ‘S’
-       AND house_number > 1;
-```
 
 
 ### <u> GROUP BY </u>
@@ -165,6 +125,12 @@ SELECT  house_number,
 GROUP BY house_number;
 ```
 
+- how many breeds are in cats? how many in dogs? 
+
+Harder: 
+- What is the average age in each state and gender
+- Are inactive voters older on average?  
+
 
 
 <b> Notice ```WHERE``` conditional will always appear before ```GROUP BY```! </b>
@@ -178,31 +144,15 @@ and asks us to check the ratio!
 So what do we need? for each house
 we want one row with total num cats and total num dogs
 
-let’s first try for each pet to find number of animals
+- let’s first try for each pet to find the number of animals
 
-
-
-```
-SELECT house_number, count(*) as num_cats FROM cats
-         GROUP BY house_number
-        ORDER BY num_cats DESC;
-```
-- Since we grouped by house number it's the only column we could have mentioned in the select statement without an aggregate function
 
 <b> Notice: ```ORDER BY``` will always come after ```GROUP BY``` if there is one </b> 
 
+- Use the order by command to find the oldest active female voter
+- How many people are in each age group (e.g. 96, 94) --> do not return each age separately
 
-
-##### The same query would fit for dogs
-
-```
-SELECT house_number, count(*) as num_dogs FROM dogs
-         GROUP BY house_number
-        ORDER BY num_dogs DESC;
-```
-
-
-
+[Joins](https://stackoverflow.com/questions/53949197/isnt-sql-a-left-join-b-just-a/53949327)
 #### We would like now to join between the two
 - ```WITH``` helps to build multiple tables inside one query
 these tables will only exist in our existing query and won't be accessible outside the query.
@@ -234,84 +184,34 @@ ORDER BY cats_ratio desc;
 ```
 
 #### Did we choose the correct Join?
-Left join keeps all the records from the main table (the one called in the select from statement) but doesn't show you keys that are in the joined table (in our case dogs_num) which don't match the keys in the main table (cats_num)
+
 
 #### Let’s see what would happen if dogs were also placed at house number 5
 
-```INSERT INTO dogs VALUES (‘lulu’, ‘Hound’, 5, 3);```
+- insert an entry for another dog in house number 5
 
 
-
-#### So actually we want here a full join in order to get the keys from both tables
-
-
-```
-WITH cats_num AS
-
---first table
-(SELECT house_number
-, count(*) as num_cats FROM cats
-         GROUP BY house_number
-        ORDER BY num_cats DESC),
-        
--- second table         
-dogs_num AS (SELECT house_number
-, count(*) as num_dogs FROM dogs
-         GROUP BY house_number
-        ORDER BY num_dogs DESC)
-
-SELECT cats_num.house_number as cats_house
-, dogs_num.house_number as dogs_house
-        , coalesce(CAST(num_cats AS decimal) /  CAST(num_cats + num_dogs AS Decimal), 0) AS cats_ratio
-FROM cats_num
-FULL OUTER JOIN dogs_num ON 
-				cats_num.house_number = dogs_num.house_number
-				ORDER BY cats_ratio desc;
-```
-
-
-
-
-#### Do all cats have an owner?
-#### What join will you use here?
+- Do all cats have an owner?
+- What join will you use here?
 
 
 - let's assume for fun that 0 in the owner_id column (last entry below) means that there is no owner. However we don't know it when we work on the table.
 
-
 ```INSERT INTO cats VALUES (‘tobi’, ‘regular’, 2, 0);```
 
 
+- Let's start with returning only cats that have an owner first
 
-#### Let's start with returning only cats that have an owner first
-
-```
-SELECT * FROM cats
-LEFT JOIN owners ON 
-			owners.id = cats.owner_id
-``` 
 
 <b> Remember: left join will keep all cats in the output. i.e. also cats that don't have an owner - so we actually need a different join</b> 
 
-#### Luckily we have ```INNER JOIN```
-- Which will return only records that match in both tables - only cats with an associated owner in the owners table 
 
-```
-SELECT * FROM cats
-INNER JOIN owners ON 
-			owners.id = cats.owner_id
-```
+- return only cats that don’t have an owner
+
+- Let's try to (without examining the table) return the owner_id of exactly 2 proud dogs
 
 
-#### Now let's return only cats that don’t have an owner
-
-```
-SELECT owners.name 
-, cats.name AS cat_name FROM cats
-LEFT JOIN owners ON 
-			owners.id = cats.owner_id
-			WHERE owners.name IS NULL
-```
+- let's check how many voters from zip code 36003 could be persuaded
 
 
 ### <u> Window functions </u>
@@ -325,9 +225,8 @@ Source on window functions: [window functions](https://www.postgresql.org/docs/9
 
 #### Facebook interview question:
 Assume we have a table of employee information, which includes salary information.
-Write a query to find the names and salaries of the top 5 highest paid employees, in descending order.
+Write a query to find the names and salaries of the top 5 (if two or more employees have the same salary which is in the top 5, they should all be returned) highest paid employees, in descending order.
 
-##### We are going to use a fake e-commerce data table (pick) - this is used to solve the facebook question with the data we have.
 
 - Let's add to all raw columns another column called 'grouping' with all of its values being 1. 
 
@@ -346,13 +245,7 @@ SELECT salary, rank() over (partition by
         (SELECT *, 1 AS grouping FROM pick) AS pick_w_group;
 ```        
         
-##### Extensions 
-```Having``` is very useful when our wish is to put aggregate func. in our ``` Where``` queries. ```Having``` Always comes after group by.
-```
-SELECT count(dogs) AS dog FROM dogs
-GROUP BY owner
-HAVING dog > 4
-```
+
 
 
 # <u> More resources: </u>
