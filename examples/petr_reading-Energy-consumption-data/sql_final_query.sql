@@ -1,15 +1,22 @@
+-- Three tables:
+-- c = Contacts = Cambridge buildings
+-- p = Points = Consumption meters
+-- d = DataProfile = Individual values from the meter (e.g. each 30min)
+
+
 -- Display building details
-select
+
+select -- 4) final wrapper query to use for ordering stuff, quick filters etc.
   *
 from
   (
-    select
+    select -- 3) the values from p have also been reduced to statistics, only Buildings remain as rows
       Contacts_Id,
       Code,
       Name,
-      count(Points_Id) Meters,
+      count(Points_Id) Meters, -- how many meters does the building have
       sum(Days) Data_Days,
-      max(case when Type = 'Electricity' then 1 else 0 end) E,
+      max(case when Type = 'Electricity' then 1 else 0 end) E, -- is there an electricity meter
       max(case when Type = 'Gas' then 1 else 0 end) G,
       max(case when Type = 'Water' then 1 else 0 end) W,
       max(case when Type not in ('Electricity','Gas','Water') then 1 else 0 end) O,
@@ -17,10 +24,10 @@ from
       cast(max(Newest) as date) Newest
     from
       (
-        SELECT
+        SELECT -- 2) Choose only the columns I want - only columns in GROUP BY and aggregating functions permitted
           COUNT(d.Date) Days,
           MAX(d.Date) Newest,
-          MIN(d.Date) Oldest,
+          MIN(d.Date) Oldest, -- The values from d have all been reduced to a few statistics
           c.Id Contacts_Id,
           p.Id Points_Id,
           c.Code,
@@ -32,7 +39,7 @@ from
           p.Location,
           p.Code2,
           p.Closed_Date
-        FROM
+        FROM -- 1) Join the three tables together on the id numbers
           dbo.Points p
           RIGHT JOIN (
             select
