@@ -19,6 +19,9 @@ Good and quick summary of several confusing concepts in SQL for beginners and ho
 
 Comparison and Parallels to Python's Pandas functions. Especially useful is the `pd.merge()` representing a `JOIN`. 
 
+**[Databases and SQL - SW Carpentry](http://swcarpentry.github.io/sql-novice-survey/)**
+
+Programming course (4:50 h) teaching SQL including some basic inputs and integration with Python and R.
 
 ## Examples
 
